@@ -1,0 +1,15 @@
+[
+  {
+    "name": "silver",
+    "path": "/Files",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Files/silver",
+        "itemId": "686ffcac-ae50-9789-4bf9-b79a31308495",
+        "workspaceId": "00000000-0000-0000-0000-000000000000",
+        "artifactType": "Lakehouse"
+      }
+    }
+  }
+]

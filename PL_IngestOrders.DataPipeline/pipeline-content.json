@@ -1,0 +1,781 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "BinarySource",
+            "formatSettings": {
+              "type": "BinaryReadSettings"
+            },
+            "storeSettings": {
+              "type": "HttpReadSettings",
+              "requestMethod": "GET"
+            },
+            "datasetSettings": {
+              "type": "Binary",
+              "typeProperties": {
+                "location": {
+                  "type": "HttpServerLocation",
+                  "relativeUrl": "anujshukla2610/fabric/refs/heads/main/orders.csv"
+                }
+              },
+              "externalReferences": {
+                "connection": "b1ecdd88-32d2-41da-b682-3ce71fe2a676"
+              },
+              "annotations": []
+            }
+          },
+          "sink": {
+            "type": "BinarySink",
+            "storeSettings": {
+              "type": "LakehouseWriteSettings"
+            },
+            "datasetSettings": {
+              "type": "Binary",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation",
+                  "folderPath": "raw",
+                  "fileName": "orders.csv"
+                }
+              },
+              "linkedService": {
+                "name": "FabricTraining_LH",
+                "properties": {
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                    "workspaceId": "00000000-0000-0000-0000-000000000000",
+                    "rootFolder": "Files"
+                  },
+                  "annotations": []
+                }
+              },
+              "annotations": []
+            }
+          },
+          "enableStaging": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Copy_to_Raw",
+        "dependsOn": []
+      },
+      {
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "DelimitedTextSource",
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "storeSettings": {
+              "type": "LakehouseReadSettings",
+              "recursive": true,
+              "enablePartitionDiscovery": false
+            },
+            "datasetSettings": {
+              "type": "DelimitedText",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation",
+                  "folderPath": "raw",
+                  "fileName": "orders.csv"
+                },
+                "columnDelimiter": ",",
+                "quoteChar": "\"",
+                "escapeChar": "\\",
+                "firstRowAsHeader": true
+              },
+              "schema": [],
+              "linkedService": {
+                "name": "FabricTraining_LH",
+                "properties": {
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                    "workspaceId": "00000000-0000-0000-0000-000000000000",
+                    "rootFolder": "Files"
+                  },
+                  "annotations": []
+                }
+              },
+              "annotations": []
+            }
+          },
+          "sink": {
+            "type": "DelimitedTextSink",
+            "formatSettings": {
+              "type": "DelimitedTextWriteSettings",
+              "fileExtension": ".txt"
+            },
+            "storeSettings": {
+              "type": "LakehouseWriteSettings"
+            },
+            "datasetSettings": {
+              "type": "DelimitedText",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation",
+                  "folderPath": "archive",
+                  "fileName": "orders.csv"
+                },
+                "columnDelimiter": ",",
+                "quoteChar": "\"",
+                "escapeChar": "\\",
+                "firstRowAsHeader": true
+              },
+              "schema": [],
+              "linkedService": {
+                "name": "FabricTraining_LH",
+                "properties": {
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                    "workspaceId": "00000000-0000-0000-0000-000000000000",
+                    "rootFolder": "Files"
+                  },
+                  "annotations": []
+                }
+              },
+              "annotations": []
+            }
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          },
+          "enableStaging": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Move_to_Archive",
+        "dependsOn": [
+          {
+            "activity": "Copy_to_Raw",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Delete",
+        "typeProperties": {
+          "enableLogging": false,
+          "datasetSettings": {
+            "type": "Binary",
+            "typeProperties": {
+              "location": {
+                "type": "LakehouseLocation",
+                "folderPath": "raw",
+                "fileName": "orders.csv"
+              }
+            },
+            "linkedService": {
+              "name": "FabricTraining_LH",
+              "properties": {
+                "type": "Lakehouse",
+                "typeProperties": {
+                  "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                  "workspaceId": "00000000-0000-0000-0000-000000000000",
+                  "rootFolder": "Files"
+                },
+                "annotations": []
+              }
+            },
+            "annotations": []
+          },
+          "storeSettings": {
+            "type": "LakehouseReadSettings",
+            "recursive": true,
+            "enablePartitionDiscovery": false
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Delete_Raw_File",
+        "dependsOn": [
+          {
+            "activity": "Move_to_Archive",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "RefreshDataflow",
+        "typeProperties": {
+          "dataflowId": "d20e5074-ec06-869f-4572-31387fdb0b84",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Run_DF_CleanOrders",
+        "dependsOn": [
+          {
+            "activity": "Delete_Raw_File",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "run_date",
+          "value": {
+            "value": "@utcNow()",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Set_RunDate",
+        "dependsOn": [
+          {
+            "activity": "Refresh_Gold_Layer",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Lookup",
+        "typeProperties": {
+          "source": {
+            "type": "JsonSource",
+            "formatSettings": {
+              "type": "JsonReadSettings"
+            },
+            "storeSettings": {
+              "type": "LakehouseReadSettings",
+              "recursive": true,
+              "enablePartitionDiscovery": false
+            }
+          },
+          "datasetSettings": {
+            "type": "Json",
+            "typeProperties": {
+              "location": {
+                "type": "LakehouseLocation",
+                "folderPath": "raw",
+                "fileName": "source_config.json"
+              }
+            },
+            "schema": {},
+            "linkedService": {
+              "name": "FabricTraining_LH",
+              "properties": {
+                "type": "Lakehouse",
+                "typeProperties": {
+                  "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                  "workspaceId": "00000000-0000-0000-0000-000000000000",
+                  "rootFolder": "Files"
+                },
+                "annotations": []
+              }
+            },
+            "annotations": []
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Lookup_SourceURL",
+        "dependsOn": [
+          {
+            "activity": "Set_RunDate",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "value": "@not(equals(variables('run_date'),'SKIP'))",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [
+            {
+              "type": "Copy",
+              "typeProperties": {
+                "source": {
+                  "type": "DelimitedTextSource",
+                  "formatSettings": {
+                    "type": "DelimitedTextReadSettings"
+                  },
+                  "storeSettings": {
+                    "type": "HttpReadSettings",
+                    "requestMethod": "GET"
+                  },
+                  "datasetSettings": {
+                    "type": "DelimitedText",
+                    "typeProperties": {
+                      "location": {
+                        "type": "HttpServerLocation",
+                        "relativeUrl": "anujshukla2610/fabric/refs/heads/main/orders.csv"
+                      },
+                      "columnDelimiter": ",",
+                      "quoteChar": "\"",
+                      "escapeChar": "\\",
+                      "firstRowAsHeader": true
+                    },
+                    "schema": [],
+                    "externalReferences": {
+                      "connection": "b1ecdd88-32d2-41da-b682-3ce71fe2a676"
+                    },
+                    "annotations": []
+                  }
+                },
+                "sink": {
+                  "type": "DelimitedTextSink",
+                  "formatSettings": {
+                    "type": "DelimitedTextWriteSettings",
+                    "fileExtension": ".txt"
+                  },
+                  "storeSettings": {
+                    "type": "LakehouseWriteSettings"
+                  },
+                  "datasetSettings": {
+                    "type": "DelimitedText",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": "raw",
+                        "fileName": "orders.csv"
+                      },
+                      "columnDelimiter": ",",
+                      "quoteChar": "\"",
+                      "escapeChar": "\\",
+                      "firstRowAsHeader": true
+                    },
+                    "schema": [],
+                    "linkedService": {
+                      "name": "FabricTraining_LH",
+                      "properties": {
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                          "workspaceId": "00000000-0000-0000-0000-000000000000",
+                          "rootFolder": "Files"
+                        },
+                        "annotations": []
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "translator": {
+                  "type": "TabularTranslator",
+                  "typeConversion": true,
+                  "typeConversionSettings": {
+                    "allowDataTruncation": true,
+                    "treatBooleanAsNumber": false
+                  }
+                },
+                "enableStaging": false
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Copy_To_Raw1",
+              "dependsOn": []
+            },
+            {
+              "type": "Copy",
+              "typeProperties": {
+                "source": {
+                  "type": "DelimitedTextSource",
+                  "formatSettings": {
+                    "type": "DelimitedTextReadSettings"
+                  },
+                  "storeSettings": {
+                    "type": "LakehouseReadSettings",
+                    "recursive": true,
+                    "enablePartitionDiscovery": false
+                  },
+                  "datasetSettings": {
+                    "type": "DelimitedText",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": "raw",
+                        "fileName": "orders.csv"
+                      },
+                      "columnDelimiter": ",",
+                      "quoteChar": "\"",
+                      "escapeChar": "\\",
+                      "firstRowAsHeader": true
+                    },
+                    "schema": [],
+                    "linkedService": {
+                      "name": "FabricTraining_LH",
+                      "properties": {
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                          "workspaceId": "00000000-0000-0000-0000-000000000000",
+                          "rootFolder": "Files"
+                        },
+                        "annotations": []
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "sink": {
+                  "type": "DelimitedTextSink",
+                  "formatSettings": {
+                    "type": "DelimitedTextWriteSettings",
+                    "fileExtension": ".txt"
+                  },
+                  "storeSettings": {
+                    "type": "LakehouseWriteSettings"
+                  },
+                  "datasetSettings": {
+                    "type": "DelimitedText",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": "archive",
+                        "fileName": "orders.csv"
+                      },
+                      "columnDelimiter": ",",
+                      "quoteChar": "\"",
+                      "escapeChar": "\\",
+                      "firstRowAsHeader": true
+                    },
+                    "schema": [],
+                    "linkedService": {
+                      "name": "FabricTraining_LH",
+                      "properties": {
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                          "workspaceId": "00000000-0000-0000-0000-000000000000",
+                          "rootFolder": "Files"
+                        },
+                        "annotations": []
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "translator": {
+                  "type": "TabularTranslator",
+                  "typeConversion": true,
+                  "typeConversionSettings": {
+                    "allowDataTruncation": true,
+                    "treatBooleanAsNumber": false
+                  }
+                },
+                "enableStaging": false
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Move_To_Archive1",
+              "dependsOn": [
+                {
+                  "activity": "Copy_To_Raw1",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Delete",
+              "typeProperties": {
+                "enableLogging": false,
+                "datasetSettings": {
+                  "type": "Binary",
+                  "typeProperties": {
+                    "location": {
+                      "type": "LakehouseLocation",
+                      "folderPath": "raw",
+                      "fileName": "orders.csv"
+                    }
+                  },
+                  "linkedService": {
+                    "name": "FabricTraining_LH",
+                    "properties": {
+                      "type": "Lakehouse",
+                      "typeProperties": {
+                        "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                        "workspaceId": "00000000-0000-0000-0000-000000000000",
+                        "rootFolder": "Files"
+                      },
+                      "annotations": []
+                    }
+                  },
+                  "annotations": []
+                },
+                "storeSettings": {
+                  "type": "LakehouseReadSettings",
+                  "recursive": true,
+                  "enablePartitionDiscovery": false
+                }
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Delete_Raw_File1",
+              "dependsOn": [
+                {
+                  "activity": "Move_To_Archive1",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "RefreshDataflow",
+              "typeProperties": {
+                "dataflowId": "d20e5074-ec06-869f-4572-31387fdb0b84",
+                "workspaceId": "00000000-0000-0000-0000-000000000000",
+                "notifyOption": "NoNotification",
+                "dataflowType": "DataflowFabric"
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Run_DF_CleanOrders1",
+              "dependsOn": [
+                {
+                  "activity": "Delete_Raw_File1",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Copy",
+              "typeProperties": {
+                "source": {
+                  "type": "DelimitedTextSource",
+                  "formatSettings": {
+                    "type": "DelimitedTextReadSettings"
+                  },
+                  "storeSettings": {
+                    "type": "LakehouseReadSettings",
+                    "recursive": true,
+                    "enablePartitionDiscovery": false
+                  },
+                  "datasetSettings": {
+                    "type": "DelimitedText",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": "raw",
+                        "fileName": "pipeline_errors.txt"
+                      },
+                      "columnDelimiter": ",",
+                      "quoteChar": "\"",
+                      "escapeChar": "\\",
+                      "firstRowAsHeader": true
+                    },
+                    "schema": [],
+                    "linkedService": {
+                      "name": "FabricTraining_LH",
+                      "properties": {
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                          "workspaceId": "00000000-0000-0000-0000-000000000000",
+                          "rootFolder": "Files"
+                        },
+                        "annotations": []
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "sink": {
+                  "type": "DelimitedTextSink",
+                  "formatSettings": {
+                    "type": "DelimitedTextWriteSettings",
+                    "fileExtension": ".txt"
+                  },
+                  "storeSettings": {
+                    "type": "LakehouseWriteSettings"
+                  },
+                  "datasetSettings": {
+                    "type": "DelimitedText",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": "raw",
+                        "fileName": "pipeline_errors.txt"
+                      },
+                      "columnDelimiter": ",",
+                      "quoteChar": "\"",
+                      "escapeChar": "\\",
+                      "firstRowAsHeader": true
+                    },
+                    "schema": [],
+                    "linkedService": {
+                      "name": "FabricTraining_LH",
+                      "properties": {
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "artifactId": "013cb0e9-2f77-ab29-4d95-480188414f66",
+                          "workspaceId": "00000000-0000-0000-0000-000000000000",
+                          "rootFolder": "Files"
+                        },
+                        "annotations": []
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "translator": {
+                  "type": "TabularTranslator",
+                  "typeConversion": true,
+                  "typeConversionSettings": {
+                    "allowDataTruncation": true,
+                    "treatBooleanAsNumber": false
+                  }
+                },
+                "enableStaging": false
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Log_Error",
+              "dependsOn": [
+                {
+                  "activity": "Copy_To_Raw1",
+                  "dependencyConditions": [
+                    "Failed"
+                  ]
+                }
+              ]
+            }
+          ],
+          "ifFalseActivities": []
+        },
+        "name": "If Condition1",
+        "dependsOn": [
+          {
+            "activity": "Lookup_SourceURL",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Script",
+        "typeProperties": {
+          "scripts": [
+            {
+              "text": {
+                "value": "SELECT TOP 1  *\nFROM gold_monthly_summary;",
+                "type": "Expression"
+              },
+              "type": "Query"
+            }
+          ],
+          "scriptBlockExecutionTimeout": "02:00:00"
+        },
+        "linkedService": {
+          "name": "FabricTraining_WS",
+          "properties": {
+            "type": "DataWarehouse",
+            "typeProperties": {
+              "artifactId": "e14ad12b-f307-b132-430d-0591fbe234ed",
+              "endpoint": "a4zwalimsvzejetplcoa432jw4-6ffafxgaqytuzimyqmitndpzl4.datawarehouse.fabric.microsoft.com",
+              "workspaceId": "00000000-0000-0000-0000-000000000000"
+            },
+            "annotations": []
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Refresh_Gold_Layer",
+        "dependsOn": [
+          {
+            "activity": "Run_DF_CleanOrders",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ],
+    "variables": {
+      "run_date": {
+        "type": "String"
+      }
+    }
+  }
+}

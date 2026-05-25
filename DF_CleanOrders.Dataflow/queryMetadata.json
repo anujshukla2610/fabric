@@ -1,0 +1,29 @@
+{
+  "formatVersion": "202502",
+  "computeEngineSettings": {
+    "allowModernEvaluationEngine": true
+  },
+  "name": "DF_CleanOrders",
+  "queryGroups": [],
+  "documentLocale": "en-US",
+  "queriesMetadata": {
+    "orders_bronze": {
+      "queryId": "707557ff-ca12-402d-abae-160cb427fa39",
+      "queryName": "orders_bronze",
+      "loadEnabled": false
+    },
+    "orders_bronze_DataDestination": {
+      "queryId": "45cadca0-21ef-4fc2-affc-c5c754929352",
+      "queryName": "orders_bronze_DataDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    }
+  },
+  "connections": [
+    {
+      "path": "Lakehouse",
+      "kind": "Lakehouse",
+      "connectionId": "{\"ClusterId\":\"27da44cf-9695-467f-ba2e-f8641fe78229\",\"DatasourceId\":\"9f6d69d8-164d-42da-be7e-32d3083941bb\"}"
+    }
+  ]
+}

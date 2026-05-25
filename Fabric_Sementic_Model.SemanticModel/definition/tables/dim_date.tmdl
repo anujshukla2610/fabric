@@ -1,0 +1,50 @@
+table dim_date
+	lineageTag: 0e0241ac-c59c-4c6e-94e3-77708c3d41e1
+
+	measure 'Total Revenue' = SUM(fact_orders[total_amount])
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: e659135e-d40d-4c76-bd51-329b58291aeb
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Order Count' = COUNTROWS(fact_orders)
+		formatString: 0
+		lineageTag: 88b2591e-3199-4879-9edf-512f444c85df
+
+	measure 'Revenue LM' =
+			
+			CALCULATE(
+			    [Total Revenue],
+			    DATEADD(dim_date[Date], -1, MONTH)
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 695805ae-b294-4f25-bb67-3b764814f861
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Date
+		formatString: General Date
+		lineageTag: f6defe5f-b318-46dc-9884-ec841b942eef
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month = FORMAT(dim_date[Date], "YYYY-MM")
+		lineageTag: 74dc2651-37c5-461b-a129-ffa4aa498ad6
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_date = calculated
+		mode: import
+		source =
+				
+				CALENDAR(
+				    DATE(2024,1,1),
+				    DATE(2026,12,31)
+				)
+
+	annotation PBI_Id = f82f422c17bc4a6ab950cc78fee53f76
+
